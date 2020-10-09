@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./js/vue.js"></script>
+</head>
+<body>
+<!--2.将数据渲染到页面上-->
+<div id="app">
+    <!--3.添加图书-->
+    <div>
+        <h1>图书管理</h1>
+        <div class="book">
+            <div>
+                <label for="id">
+                    编号：
+                </label>
+                <input type="text" id="id" v-model="id" :disabled="flag">
+                <label for="name">
+                    名称：
+                </label>
+                <input type="text" id="name" v-model="name">
+                <button v-on:click="handle">提交</button>
+            </div>
+        </div>
+
+    </div>
+    <table>
+        <tbody>
+        <tr v-for="item in books" :key="item.id">
+            <td>{{item.id}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.date}}</td>
+            <td>
+                <!--阻止跳转-->
+                <a href="" @click.prevent="toEdit(item.id)">修改</a>
+                <span>|</span>
+                <a href="" @click.prevent="deleteBook(item.id)">删除</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+
+    // 1.将数据存放到vue的data属性中去
+    let vm = new Vue({
+        el:'#app',
+        data:{
+            id:'',
+            name:'',
+            flag: false,
+            books:[
+                {id:1,name:'三国演义',date:''},
+                {id:2,name:'水浒传',date:''},
+                {id:3,name:'红楼梦',date:''},
+                {id:4,name:'西游记',date:''}
+            ]
+        },
+        methods:{
+            // 提交
+            handle:function (){
+                if (this.flag){
+                    this.books.some((item)=>{
+                        if(item.id===this.id){
+                            item.name=this.name;
+                            return true;
+                        }
+                    })
+                    this.flag=false;
+                }else{
+                // 定义一个新对象book存储获取输入框中的值
+                let book ={};
+                // 将输入框中的值添加到book对象
+                book.id = this.id;
+                book.name = this.name;
+                book.date ='';
+                // 将book对象放入数组当中
+                this.books.push(book);
+                // 清空输入框中的值
+                this.id='';
+                this.name='';
+                }
+                this.id='';
+                this.name='';
+            },
+            // 修改按照输入的id来修改
+            toEdit:function (id){
+                // 遍历数组 拿到对应的数据
+               let book = this.books.filter(function (item){
+                   return item.id===id;
+               })
+                this.id = book[0].id;
+                this.name = book[0].name;
+                this.flag=true;
+            },
+            deleteBook:function (id){
+                let index = this.books.findIndex(function (item){
+                    return item.id===id;
+                })
+                this.books.splice(index,1);
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
